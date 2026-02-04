@@ -1,17 +1,9 @@
 'use client';
 
 import { useSession, signOut } from 'next-auth/react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+import { Button } from '@giftee/abukuma-react';
 import { getHighestRole } from '@/lib/permissions';
+import { useState } from 'react';
 
 const roleLabels = {
   employee: '従業員',
@@ -23,6 +15,7 @@ export function Header() {
   const { data: session } = useSession();
   const user = session?.user;
   const highestRole = user?.roles ? getHighestRole(user.roles) : 'employee';
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const getInitials = (name: string) => {
     return name
@@ -34,40 +27,65 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-14 items-center px-4">
-        <div className="flex items-center gap-2 font-semibold">
-          <span className="text-lg">目標評価システム</span>
-        </div>
+    <header
+      className="ab-flex ab-items-center ab-px-4 ab-bg-base"
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        height: '56px',
+        borderBottom: '1px solid #e0e0e0',
+      }}
+    >
+      <div className="ab-flex ab-items-center ab-gap-2">
+        <span className="ab-text-heading-m ab-text-default">目標評価システム</span>
+      </div>
 
-        <div className="ml-auto flex items-center gap-4">
-          {user && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback>{getInitials(user.name || 'U')}</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user.name}</p>
-                    <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {roleLabels[highestRole]}
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/login' })}>
+      <div className="ab-flex ab-items-center ab-gap-4" style={{ marginLeft: 'auto' }}>
+        {user && (
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="ab-flex ab-items-center ab-justify-center ab-rounded-full ab-bg-rest-primary ab-text-on-primary"
+              style={{
+                width: '32px',
+                height: '32px',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              {getInitials(user.name || 'U')}
+            </button>
+
+            {isMenuOpen && (
+              <div
+                className="ab-bg-base ab-rounded-md ab-p-4"
+                style={{
+                  position: 'absolute',
+                  top: '40px',
+                  right: 0,
+                  minWidth: '200px',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                  zIndex: 100,
+                }}
+              >
+                <div className="ab-flex ab-flex-column ab-gap-1 ab-mb-4">
+                  <p className="ab-text-body-m ab-text-default">{user.name}</p>
+                  <p className="ab-text-body-s ab-text-secondary">{user.email}</p>
+                  <p className="ab-text-body-s ab-text-secondary">{roleLabels[highestRole]}</p>
+                </div>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => signOut({ callbackUrl: '/login' })}
+                  style={{ width: '100%' }}
+                >
                   ログアウト
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </div>
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );

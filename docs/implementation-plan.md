@@ -11,7 +11,7 @@
 | レイヤー | 技術 | 備考 |
 |----------|------|------|
 | フロントエンド | Next.js 14 (App Router) | TypeScript |
-| UIライブラリ | Tailwind CSS + shadcn/ui | |
+| UIライブラリ | Abukumaデザインシステム | @giftee/abukuma-react, @giftee/abukuma-css |
 | バックエンド | Next.js API Routes | |
 | ORM | Prisma | |
 | データベース | PostgreSQL | Supabase |
@@ -72,14 +72,7 @@ src/
 │   ├── layout.tsx
 │   └── page.tsx
 ├── components/
-│   ├── ui/                    # shadcn/ui components
-│   │   ├── button.tsx
-│   │   ├── card.tsx
-│   │   ├── input.tsx
-│   │   ├── select.tsx
-│   │   ├── textarea.tsx
-│   │   ├── table.tsx
-│   │   ├── dialog.tsx
+│   ├── ui/                    # Abukuma拡張コンポーネント（必要に応じて）
 │   │   └── ...
 │   ├── sheet/                 # 評価シート関連
 │   │   ├── EvaluationSheet.tsx
@@ -127,27 +120,31 @@ src/
 ### 1-1. プロジェクト初期化
 
 **タスク**
-- [ ] Next.js 14プロジェクト作成
-- [ ] TypeScript設定
-- [ ] Tailwind CSS設定
-- [ ] shadcn/ui初期化
-- [ ] ESLint/Prettier設定
+- [x] Next.js 14プロジェクト作成
+- [x] TypeScript設定
+- [x] Abukumaデザインシステム設定
+- [x] ESLint/Prettier設定
 
 **コマンド**
 ```bash
-npx create-next-app@latest performance-review --typescript --tailwind --eslint --app
+npx create-next-app@latest performance-review --typescript --eslint --app
 cd performance-review
-npx shadcn-ui@latest init
+npm install @giftee/abukuma-react @giftee/abukuma-css
+```
+
+**CSSインポート（globals.css）**
+```css
+@import '@giftee/abukuma-css/dist/style.css';
 ```
 
 ### 1-2. Prismaセットアップ
 
 **タスク**
-- [ ] Prismaインストール
-- [ ] schema.prisma作成
+- [x] Prismaインストール
+- [x] schema.prisma作成
 - [ ] Supabase接続設定
 - [ ] マイグレーション実行
-- [ ] Prisma Client生成
+- [x] Prisma Client生成
 
 **スキーマ定義（prisma/schema.prisma）**
 ```prisma
@@ -406,10 +403,10 @@ model AdditionalViewer {
 ### 1-3. 認証実装
 
 **タスク**
-- [ ] NextAuth.jsインストール
-- [ ] Google OAuth設定
-- [ ] セッション管理
-- [ ] 認証ミドルウェア
+- [x] NextAuth.jsインストール
+- [x] Google OAuth設定
+- [x] セッション管理
+- [x] 認証ミドルウェア
 
 **必要な環境変数**
 ```env
@@ -423,8 +420,8 @@ GOOGLE_CLIENT_SECRET="..."
 ### 1-4. 権限管理
 
 **タスク**
-- [ ] 権限チェック関数作成
-- [ ] ロールベースガード実装
+- [x] 権限チェック関数作成
+- [x] ロールベースガード実装
 - [ ] APIミドルウェア
 
 **lib/permissions.ts**
@@ -454,15 +451,15 @@ export const rolePermissions: Record<Role, Permission[]> = {
 ### 1-5. 共通レイアウト
 
 **タスク**
-- [ ] ヘッダーコンポーネント
-- [ ] サイドバーコンポーネント
-- [ ] 権限別ナビゲーション
+- [x] ヘッダーコンポーネント
+- [x] サイドバーコンポーネント
+- [x] 権限別ナビゲーション
 - [ ] レスポンシブ対応
 
 ### 1-6. マスタデータ投入
 
 **タスク**
-- [ ] シードスクリプト作成
+- [x] シードスクリプト作成
 - [ ] 初期データ投入
 
 ---
@@ -652,3 +649,4 @@ npm run dev
 | 日付 | バージョン | 内容 |
 |------|------------|------|
 | 2026-02-04 | 1.0 | 初版作成 |
+| 2026-02-05 | 1.1 | UIライブラリをshadcn/uiからAbukumaデザインシステムに変更、Phase 1完了状況を更新 |

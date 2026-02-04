@@ -1,7 +1,6 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { MainLayout } from '@/components/layout/main-layout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { hasAnyRole } from '@/lib/permissions';
 
 export default async function TeamPage() {
@@ -17,21 +16,22 @@ export default async function TeamPage() {
 
   return (
     <MainLayout>
-      <div className="space-y-6">
+      <div className="ab-flex ab-flex-column ab-gap-6">
         <div>
-          <h1 className="text-2xl font-bold">部下一覧</h1>
-          <p className="text-muted-foreground">管理対象の従業員一覧</p>
+          <h1 className="ab-text-heading-l ab-text-default ab-mb-2">部下一覧</h1>
+          <p className="ab-text-body-m ab-text-secondary">管理対象の従業員一覧</p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>部下の評価シート</CardTitle>
-            <CardDescription>管理対象従業員の評価状況</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">管理対象の従業員はまだ登録されていません</p>
-          </CardContent>
-        </Card>
+        <div
+          className="ab-bg-base ab-rounded-md ab-p-4"
+          style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}
+        >
+          <h2 className="ab-text-heading-m ab-text-default ab-mb-1">部下の評価シート</h2>
+          <p className="ab-text-body-s ab-text-secondary ab-mb-4">管理対象従業員の評価状況</p>
+          <p className="ab-text-body-m ab-text-secondary">
+            管理対象の従業員はまだ登録されていません
+          </p>
+        </div>
       </div>
     </MainLayout>
   );
