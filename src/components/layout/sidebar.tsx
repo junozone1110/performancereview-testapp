@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { cn } from '@/lib/utils';
 import { RoleGuard } from './role-guard';
 
 const navigation = [
@@ -45,19 +44,35 @@ export function Sidebar() {
 
   if (!session?.user) return null;
 
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
+
   return (
-    <aside className="fixed left-0 top-14 z-40 h-[calc(100vh-3.5rem)] w-64 border-r bg-background">
-      <nav className="flex flex-col gap-1 p-4">
+    <aside
+      className="ab-bg-base"
+      style={{
+        position: 'fixed',
+        left: 0,
+        top: '56px',
+        zIndex: 40,
+        height: 'calc(100vh - 56px)',
+        width: '256px',
+        borderRight: '1px solid #e0e0e0',
+      }}
+    >
+      <nav className="ab-flex ab-flex-column ab-gap-1 ab-p-4">
         {navigation.map((item) => (
           <RoleGuard key={item.href} allowedRoles={[...item.roles]}>
             <Link
               href={item.href}
-              className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                pathname === item.href || pathname.startsWith(item.href + '/')
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-              )}
+              className={`ab-flex ab-items-center ab-gap-3 ab-rounded-md ab-px-3 ab-py-2 ab-text-body-m ${
+                isActive(item.href)
+                  ? 'ab-bg-rest-primary ab-text-on-primary'
+                  : 'ab-text-secondary ab-bg-base'
+              }`}
+              style={{
+                textDecoration: 'none',
+                transition: 'background-color 0.2s',
+              }}
             >
               {item.name}
             </Link>

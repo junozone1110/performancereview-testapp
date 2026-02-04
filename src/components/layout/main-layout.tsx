@@ -10,11 +10,11 @@ interface MainLayoutProps {
 
 export function MainLayout({ children }: MainLayoutProps) {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
       <Header />
       <Sidebar />
-      <main className="ml-64 pt-14">
-        <div className="p-6">{children}</div>
+      <main style={{ marginLeft: '256px', paddingTop: '56px' }}>
+        <div className="ab-p-6">{children}</div>
       </main>
     </div>
   );
