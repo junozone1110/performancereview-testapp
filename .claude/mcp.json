@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "giftee_abukuma_mcp": {
+      "command": "npx",
+      "args": [
+        "mcp-remote@next",
+        "https://giftee-abukuma-mcp.netlify.app/mcp"
+      ]
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ]
+    }
+  }
+}
