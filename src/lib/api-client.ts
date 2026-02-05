@@ -97,6 +97,48 @@ export const totalEvaluationApi = {
     }),
 };
 
+// Team API (Manager)
+export const teamApi = {
+  list: (periodId?: string) =>
+    fetchApi<TeamMember[]>('/api/team', {
+      params: periodId ? { periodId } : undefined,
+    }),
+};
+
+// Employees API (HR)
+export const employeesApi = {
+  list: (params?: { periodId?: string; search?: string; departmentId?: string; status?: string }) =>
+    fetchApi<EmployeeSheet[]>('/api/employees', {
+      params: params
+        ? Object.fromEntries(Object.entries(params).filter(([, v]) => v !== undefined)) as Record<string, string>
+        : undefined,
+    }),
+};
+
+// Periods API (HR)
+export const periodsApi = {
+  list: () => fetchApi<Period[]>('/api/periods'),
+
+  get: (periodId: string) => fetchApi<PeriodDetail>(`/api/periods/${periodId}`),
+
+  create: (data: PeriodCreateData) =>
+    fetchApi<Period>('/api/periods', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  update: (periodId: string, data: PeriodUpdateData) =>
+    fetchApi<Period>(`/api/periods/${periodId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+
+  delete: (periodId: string) =>
+    fetchApi<{ success: boolean }>(`/api/periods/${periodId}`, {
+      method: 'DELETE',
+    }),
+};
+
 // Types for API responses and requests
 export interface SheetSummary {
   id: string;
@@ -245,4 +287,94 @@ export interface TotalEvaluationData {
   hrTreatment?: string | null;
   hrSalaryChange?: number | null;
   hrGrade?: string | null;
+}
+
+// Team API Types
+export interface TeamMember {
+  id: string;
+  userId: string;
+  periodId: string;
+  status: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    employeeNumber: string;
+  };
+  period: {
+    id: string;
+    name: string;
+    year: number;
+    half: string;
+    currentPhase: string;
+  };
+  department: {
+    id: string;
+    name: string;
+  } | null;
+  currentGrade: string | null;
+  goalsCount: number;
+  totalWeight: number;
+}
+
+// Employees API Types
+export interface EmployeeSheet {
+  id: string;
+  userId: string;
+  periodId: string;
+  status: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    employeeNumber: string;
+  };
+  period: {
+    id: string;
+    name: string;
+    year: number;
+    half: string;
+    currentPhase: string;
+  };
+  department: {
+    id: string;
+    name: string;
+  } | null;
+  manager: {
+    id: string;
+    name: string;
+  } | null;
+  currentGrade: string | null;
+  goalsCount: number;
+  totalWeight: number;
+}
+
+// Periods API Types
+export interface Period {
+  id: string;
+  name: string;
+  year: number;
+  half: string;
+  startDate: string;
+  endDate: string;
+  currentPhase: string;
+  isActive: boolean;
+  sheetsCount: number;
+}
+
+export interface PeriodDetail extends Period {
+  phaseStats: Record<string, number>;
+}
+
+export interface PeriodCreateData {
+  name: string;
+  year: number;
+  half: 'first' | 'second';
+  startDate: string;
+  endDate: string;
+}
+
+export interface PeriodUpdateData {
+  currentPhase?: string;
+  isActive?: boolean;
 }
