@@ -14,7 +14,7 @@ async function checkSheetAccess(
   sheetId: string,
   userId: string,
   userRoles: Role[]
-): Promise<{ hasAccess: boolean; isOwner: boolean; isManager: boolean }> {
+): Promise<{ hasAccess: boolean; isOwner: boolean; isManager: boolean; isAdditionalViewer: boolean }> {
   const sheet = await prisma.evaluationSheet.findUnique({
     where: { id: sheetId },
     include: {
@@ -23,7 +23,7 @@ async function checkSheetAccess(
   });
 
   if (!sheet) {
-    return { hasAccess: false, isOwner: false, isManager: false };
+    return { hasAccess: false, isOwner: false, isManager: false, isAdditionalViewer: false };
   }
 
   const isOwner = sheet.userId === userId;
@@ -37,22 +37,35 @@ async function checkSheetAccess(
     },
   }) !== null;
 
+  // 追加閲覧者かどうかをチェック
+  const isAdditionalViewer = await prisma.additionalViewer.findFirst({
+    where: {
+      sheetId,
+      viewerUserId: userId,
+    },
+  }) !== null;
+
   // HRは全シートにアクセス可能
   if (hasPermission(userRoles, 'view_all_sheets')) {
-    return { hasAccess: true, isOwner, isManager };
+    return { hasAccess: true, isOwner, isManager, isAdditionalViewer };
   }
 
   // 管理職は管理対象のシートにアクセス可能
   if (hasPermission(userRoles, 'view_team_sheets') && isManager) {
-    return { hasAccess: true, isOwner, isManager };
+    return { hasAccess: true, isOwner, isManager, isAdditionalViewer };
   }
 
   // 自分のシートにはアクセス可能
   if (isOwner) {
-    return { hasAccess: true, isOwner, isManager };
+    return { hasAccess: true, isOwner, isManager, isAdditionalViewer };
   }
 
-  return { hasAccess: false, isOwner, isManager };
+  // 追加閲覧者はシートにアクセス可能（閲覧のみ）
+  if (isAdditionalViewer) {
+    return { hasAccess: true, isOwner, isManager, isAdditionalViewer };
+  }
+
+  return { hasAccess: false, isOwner, isManager, isAdditionalViewer };
 }
 
 // GET /api/sheets/[sheetId] - シート詳細取得
@@ -66,7 +79,7 @@ export async function GET(request: Request, { params }: RouteParams) {
     }
 
     const userRoles = (session.user.roles || ['employee']) as Role[];
-    const { hasAccess, isOwner, isManager } = await checkSheetAccess(
+    const { hasAccess, isOwner, isManager, isAdditionalViewer } = await checkSheetAccess(
       sheetId,
       session.user.id,
       userRoles
@@ -103,17 +116,24 @@ export async function GET(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'シートが見つかりません' }, { status: 404 });
     }
 
-    // 編集権限を計算
-    const editPermissions = canEditSheet(
-      sheet.status,
-      sheet.period.currentPhase,
-      userRoles,
-      isOwner,
-      isManager
-    );
+    // 編集権限を計算（追加閲覧者は閲覧のみ）
+    const editPermissions = isAdditionalViewer
+      ? {
+          canEditGoals: false,
+          canEditSelfEvaluation: false,
+          canEditManagerEvaluation: false,
+          canEditHrEvaluation: false,
+        }
+      : canEditSheet(
+          sheet.status,
+          sheet.period.currentPhase,
+          userRoles,
+          isOwner,
+          isManager
+        );
 
-    // 従業員本人には上長評価・Mgr判断・HR判断を非表示
-    const showManagerEvaluation = !isOwner || userRoles.includes('hr') || userRoles.includes('manager');
+    // 従業員本人には上長評価・Mgr判断・HR判断を非表示（追加閲覧者も閲覧可能に）
+    const showManagerEvaluation = !isOwner || userRoles.includes('hr') || userRoles.includes('manager') || isAdditionalViewer;
     const showMgrJudgment = userRoles.includes('hr') || (userRoles.includes('manager') && !isOwner);
     const showHrJudgment = userRoles.includes('hr') || (userRoles.includes('manager') && !isOwner);
 
@@ -144,6 +164,7 @@ export async function GET(request: Request, { params }: RouteParams) {
       editPermissions,
       isOwner,
       isManager,
+      isAdditionalViewer,
     });
   } catch (error) {
     console.error('Error fetching sheet:', error);
@@ -162,7 +183,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     }
 
     const userRoles = (session.user.roles || ['employee']) as Role[];
-    const { hasAccess, isOwner, isManager } = await checkSheetAccess(
+    const { hasAccess, isOwner, isManager, isAdditionalViewer } = await checkSheetAccess(
       sheetId,
       session.user.id,
       userRoles
@@ -170,6 +191,11 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 
     if (!hasAccess) {
       return NextResponse.json({ error: 'このシートへのアクセス権限がありません' }, { status: 403 });
+    }
+
+    // 追加閲覧者は編集不可
+    if (isAdditionalViewer && !isOwner && !isManager && !hasPermission(userRoles, 'edit_all_sheets')) {
+      return NextResponse.json({ error: '閲覧者には編集権限がありません' }, { status: 403 });
     }
 
     const body = await request.json();
