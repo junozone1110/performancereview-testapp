@@ -118,6 +118,7 @@ export interface SheetSummary {
   };
   goalsCount: number;
   totalWeight: number;
+  isOwner: boolean;
 }
 
 export interface SheetDetail {

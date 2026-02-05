@@ -133,6 +133,7 @@ export async function GET(request: Request) {
       goalsCount: sheet.goals.length,
       totalWeight: sheet.goals.reduce((sum, g) => sum + g.weight, 0),
       goals: undefined, // 一覧では詳細な目標情報は不要
+      isOwner: sheet.userId === session.user.id,
     }));
 
     return NextResponse.json(sheetsWithSummary);

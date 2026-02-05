@@ -31,8 +31,10 @@ export function SheetsList() {
     fetchSheets();
   }, []);
 
-  const currentSheet = sheets.find((s) => s.period.currentPhase !== 'finalized');
-  const pastSheets = sheets.filter((s) => s.period.currentPhase === 'finalized');
+  // 自分のシートのみフィルタリング
+  const mySheets = sheets.filter((s) => s.isOwner);
+  const currentSheet = mySheets.find((s) => s.period.currentPhase !== 'finalized');
+  const pastSheets = mySheets.filter((s) => s.period.currentPhase === 'finalized');
 
   if (isLoading) {
     return (
