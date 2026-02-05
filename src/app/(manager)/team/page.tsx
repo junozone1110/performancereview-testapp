@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { MainLayout } from '@/components/layout/main-layout';
 import { hasAnyRole } from '@/lib/permissions';
+import { TeamList } from '@/components/team';
 
 export default async function TeamPage() {
   const session = await auth();
@@ -22,16 +23,7 @@ export default async function TeamPage() {
           <p className="ab-text-body-m ab-text-secondary">管理対象の従業員一覧</p>
         </div>
 
-        <div
-          className="ab-bg-base ab-rounded-md ab-p-4"
-          style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}
-        >
-          <h2 className="ab-text-heading-m ab-text-default ab-mb-1">部下の評価シート</h2>
-          <p className="ab-text-body-s ab-text-secondary ab-mb-4">管理対象従業員の評価状況</p>
-          <p className="ab-text-body-m ab-text-secondary">
-            管理対象の従業員はまだ登録されていません
-          </p>
-        </div>
+        <TeamList />
       </div>
     </MainLayout>
   );
