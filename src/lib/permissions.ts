@@ -1,4 +1,4 @@
-import { Role } from '@prisma/client';
+import { Role } from '@/types/enums';
 
 export type Permission =
   | 'view_own_sheet'
@@ -33,19 +33,20 @@ export const rolePermissions: Record<Role, Permission[]> = {
   ],
 };
 
-export function hasPermission(roles: Role[], permission: Permission): boolean {
-  return roles.some((role) => rolePermissions[role]?.includes(permission));
+// Note: Functions accept string to support SQLite (which stores enums as strings)
+export function hasPermission(roles: (Role | string)[], permission: Permission): boolean {
+  return roles.some((role) => rolePermissions[role as Role]?.includes(permission));
 }
 
-export function hasRole(roles: Role[], targetRole: Role): boolean {
-  return roles.includes(targetRole);
+export function hasRole(roles: (Role | string)[], targetRole: Role | string): boolean {
+  return roles.includes(targetRole as Role);
 }
 
-export function hasAnyRole(roles: Role[], targetRoles: Role[]): boolean {
-  return targetRoles.some((targetRole) => roles.includes(targetRole));
+export function hasAnyRole(roles: (Role | string)[], targetRoles: (Role | string)[]): boolean {
+  return targetRoles.some((targetRole) => roles.includes(targetRole as Role));
 }
 
-export function getHighestRole(roles: Role[]): Role {
+export function getHighestRole(roles: (Role | string)[]): Role {
   if (roles.includes('hr')) return 'hr';
   if (roles.includes('manager')) return 'manager';
   return 'employee';

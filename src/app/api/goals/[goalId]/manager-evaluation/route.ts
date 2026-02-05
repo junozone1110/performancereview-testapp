@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { canEditSheet } from '@/lib/workflow';
-import type { Role, PerformanceRating, CompetencyRating } from '@prisma/client';
+import type { Role, PerformanceRating, CompetencyRating } from '@/types/enums';
 
 interface RouteParams {
   params: Promise<{ goalId: string }>;

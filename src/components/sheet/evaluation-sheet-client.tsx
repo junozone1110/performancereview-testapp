@@ -24,7 +24,7 @@ import type {
 } from '@/types/evaluation';
 import { validateWeights, calculateAverageScore, halfLabels } from '@/types/evaluation';
 import { phaseLabels } from '@/lib/workflow';
-import type { Role } from '@prisma/client';
+import type { Role } from '@/types/enums';
 
 interface EditPermissions {
   canEditGoals: boolean;

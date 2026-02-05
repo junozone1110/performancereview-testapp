@@ -14,7 +14,7 @@ import {
   ApiError,
 } from '@/lib/api-client';
 import { halfLabels } from '@/types/evaluation';
-import type { Half } from '@prisma/client';
+import type { Half } from '@/types/enums';
 
 export function ViewersList() {
   const [viewers, setViewers] = useState<AdditionalViewer[]>([]);

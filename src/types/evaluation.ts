@@ -1,11 +1,11 @@
-import {
+import type {
   Phase,
   PerformanceRating,
   CompetencyRating,
   Grade,
   Treatment,
   Half,
-} from '@prisma/client';
+} from './enums';
 
 // 評価ランクの数値マッピング
 export const performanceRatingValues: Record<PerformanceRating, number> = {

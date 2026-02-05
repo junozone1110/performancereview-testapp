@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@giftee/abukuma-react';
 import type { Goal, ManagerEvaluationFormData } from '@/types/evaluation';
 import { performanceRatingLabels, competencyRatingLabels } from '@/types/evaluation';
-import { PerformanceRating, CompetencyRating } from '@prisma/client';
+import { PerformanceRating, CompetencyRating } from '@/types/enums';
 
 interface ManagerEvaluationFormProps {
   goal: Goal;
