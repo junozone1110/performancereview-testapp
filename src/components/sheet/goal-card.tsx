@@ -39,6 +39,7 @@ export function GoalCard({
     <div
       className="ab-bg-base ab-rounded-md ab-p-4"
       style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}
+      data-testid="goal-card"
     >
       {/* ヘッダー */}
       <div className="ab-flex ab-items-start ab-gap-4">

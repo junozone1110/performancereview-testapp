@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { RoleGuard } from './role-guard';
+import { useSidebar } from './main-layout';
 
 const navigation = [
   {
@@ -41,6 +42,7 @@ const navigation = [
 export function Sidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const { isOpen, close } = useSidebar();
 
   if (!session?.user) return null;
 
@@ -48,12 +50,12 @@ export function Sidebar() {
 
   return (
     <aside
-      className="ab-bg-base"
+      className={`ab-bg-base sidebar-container ${isOpen ? 'open' : ''}`}
       style={{
         position: 'fixed',
         left: 0,
         top: '56px',
-        zIndex: 40,
+        zIndex: 45,
         height: 'calc(100vh - 56px)',
         width: '256px',
         borderRight: '1px solid #e0e0e0',
@@ -73,6 +75,7 @@ export function Sidebar() {
                 textDecoration: 'none',
                 transition: 'background-color 0.2s',
               }}
+              onClick={close}
             >
               {item.name}
             </Link>

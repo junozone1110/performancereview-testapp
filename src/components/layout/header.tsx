@@ -4,6 +4,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@giftee/abukuma-react';
 import { getHighestRole } from '@/lib/permissions';
 import { useState } from 'react';
+import { useSidebar } from './main-layout';
 
 const roleLabels = {
   employee: '従業員',
@@ -16,6 +17,7 @@ export function Header() {
   const user = session?.user;
   const highestRole = user?.roles ? getHighestRole(user.roles) : 'employee';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { toggle } = useSidebar();
 
   const getInitials = (name: string) => {
     return name
@@ -38,6 +40,31 @@ export function Header() {
       }}
     >
       <div className="ab-flex ab-items-center ab-gap-2">
+        {/* Mobile menu button */}
+        <button
+          className="mobile-menu-button"
+          onClick={toggle}
+          style={{
+            display: 'none',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '8px',
+            marginRight: '8px',
+          }}
+          aria-label="メニューを開く"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M3 12h18M3 6h18M3 18h18" />
+          </svg>
+        </button>
         <span className="ab-text-heading-m ab-text-default">目標評価システム</span>
       </div>
 

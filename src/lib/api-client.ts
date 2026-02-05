@@ -139,6 +139,41 @@ export const periodsApi = {
     }),
 };
 
+// Viewers API (HR)
+export const viewersApi = {
+  list: (params?: { sheetId?: string; periodId?: string }) =>
+    fetchApi<AdditionalViewer[]>('/api/viewers', {
+      params: params
+        ? Object.fromEntries(Object.entries(params).filter(([, v]) => v !== undefined)) as Record<string, string>
+        : undefined,
+    }),
+
+  create: (data: ViewerCreateData) =>
+    fetchApi<AdditionalViewer>('/api/viewers', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  delete: (viewerId: string) =>
+    fetchApi<{ success: boolean }>(`/api/viewers/${viewerId}`, {
+      method: 'DELETE',
+    }),
+};
+
+// Users API (HR)
+export const usersApi = {
+  list: (params?: { search?: string; activeOnly?: boolean }) =>
+    fetchApi<UserSummary[]>('/api/users', {
+      params: params
+        ? Object.fromEntries(
+            Object.entries(params)
+              .filter(([, v]) => v !== undefined)
+              .map(([k, v]) => [k, String(v)])
+          ) as Record<string, string>
+        : undefined,
+    }),
+};
+
 // Types for API responses and requests
 export interface SheetSummary {
   id: string;
@@ -194,6 +229,7 @@ export interface SheetDetail {
   };
   isOwner: boolean;
   isManager: boolean;
+  isAdditionalViewer?: boolean;
 }
 
 export interface Goal {
@@ -377,4 +413,53 @@ export interface PeriodCreateData {
 export interface PeriodUpdateData {
   currentPhase?: string;
   isActive?: boolean;
+}
+
+// Viewers API Types
+export interface AdditionalViewer {
+  id: string;
+  sheetId: string;
+  viewerUserId: string;
+  createdBy: string;
+  createdAt: string;
+  sheet: {
+    id: string;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      employeeNumber: string;
+    };
+    period: {
+      id: string;
+      name: string;
+      year: number;
+      half: string;
+    };
+  };
+  viewer: {
+    id: string;
+    name: string;
+    email: string;
+    employeeNumber: string;
+  };
+  creator: {
+    id: string;
+    name: string;
+  };
+}
+
+export interface ViewerCreateData {
+  sheetId: string;
+  viewerUserId: string;
+}
+
+// Users API Types
+export interface UserSummary {
+  id: string;
+  name: string;
+  email: string;
+  employeeNumber: string;
+  isActive: boolean;
+  roles: string[];
 }
