@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { hasRole } from '@/lib/permissions';
-import type { Role, Phase } from '@prisma/client';
+import type { Role, Phase } from '@/types/enums';
 
 // GET /api/employees - 全従業員一覧取得（HR専用）
 export async function GET(request: Request) {
@@ -45,9 +45,9 @@ export async function GET(request: Request) {
           ...(search
             ? {
                 OR: [
-                  { name: { contains: search, mode: 'insensitive' } },
-                  { email: { contains: search, mode: 'insensitive' } },
-                  { employeeNumber: { contains: search, mode: 'insensitive' } },
+                  { name: { contains: search } },
+                  { email: { contains: search } },
+                  { employeeNumber: { contains: search } },
                 ],
               }
             : {}),

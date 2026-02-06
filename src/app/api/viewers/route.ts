@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { hasRole } from '@/lib/permissions';
-import type { Role } from '@prisma/client';
+import type { Role } from '@/types/enums';
 
 // GET /api/viewers - 追加閲覧者一覧取得（HR専用）
 export async function GET(request: Request) {

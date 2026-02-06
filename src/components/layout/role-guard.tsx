@@ -1,7 +1,7 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { Role } from '@prisma/client';
+import { Role } from '@/types/enums';
 import { hasAnyRole, hasPermission, Permission } from '@/lib/permissions';
 import { ReactNode } from 'react';
 

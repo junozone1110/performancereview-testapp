@@ -1,7 +1,7 @@
-import { Phase, Role } from '@prisma/client';
+import { Phase, Role } from '@/types/enums';
 
 // フェーズの順序
-export const phaseOrder: Phase[] = [
+export const phaseOrder: readonly (Phase | string)[] = [
   'goal_setting',
   'goal_review',
   'self_evaluation',
@@ -10,10 +10,10 @@ export const phaseOrder: Phase[] = [
   'manager_confirmed',
   'hr_evaluation',
   'finalized',
-];
+] as const;
 
 // フェーズの日本語名
-export const phaseLabels: Record<Phase, string> = {
+export const phaseLabels: Record<Phase | string, string> = {
   goal_setting: '目標入力',
   goal_review: '目標確定',
   self_evaluation: '自己評価入力',
@@ -32,7 +32,7 @@ interface PhaseEditPermission {
   canEditHrEvaluation: boolean;
 }
 
-export const phasePermissions: Record<Phase, PhaseEditPermission> = {
+export const phasePermissions: Record<Phase | string, PhaseEditPermission> = {
   goal_setting: {
     canEditGoals: true,
     canEditSelfEvaluation: false,
@@ -84,14 +84,15 @@ export const phasePermissions: Record<Phase, PhaseEditPermission> = {
 };
 
 // ユーザーがシートを編集できるか判定
+// Note: Parameters accept string to support SQLite (which stores enums as strings)
 export function canEditSheet(
-  sheetStatus: Phase,
-  periodPhase: Phase,
-  userRoles: Role[],
+  sheetStatus: Phase | string,
+  periodPhase: Phase | string,
+  userRoles: (Role | string)[],
   isOwner: boolean,
   isManager: boolean
 ): PhaseEditPermission {
-  const periodPermission = phasePermissions[periodPhase];
+  const periodPermission = phasePermissions[periodPhase as Phase];
 
   return {
     canEditGoals: periodPermission.canEditGoals && isOwner,
@@ -103,8 +104,8 @@ export function canEditSheet(
 }
 
 // 次のフェーズを取得
-export function getNextPhase(currentPhase: Phase): Phase | null {
-  const currentIndex = phaseOrder.indexOf(currentPhase);
+export function getNextPhase(currentPhase: Phase | string): Phase | string | null {
+  const currentIndex = phaseOrder.indexOf(currentPhase as Phase);
   if (currentIndex === -1 || currentIndex === phaseOrder.length - 1) {
     return null;
   }
@@ -112,11 +113,11 @@ export function getNextPhase(currentPhase: Phase): Phase | null {
 }
 
 // フェーズが特定のフェーズ以降かどうか判定
-export function isPhaseAtOrAfter(phase: Phase, targetPhase: Phase): boolean {
-  return phaseOrder.indexOf(phase) >= phaseOrder.indexOf(targetPhase);
+export function isPhaseAtOrAfter(phase: Phase | string, targetPhase: Phase | string): boolean {
+  return phaseOrder.indexOf(phase as Phase) >= phaseOrder.indexOf(targetPhase as Phase);
 }
 
 // フェーズが特定のフェーズ以前かどうか判定
-export function isPhaseAtOrBefore(phase: Phase, targetPhase: Phase): boolean {
-  return phaseOrder.indexOf(phase) <= phaseOrder.indexOf(targetPhase);
+export function isPhaseAtOrBefore(phase: Phase | string, targetPhase: Phase | string): boolean {
+  return phaseOrder.indexOf(phase as Phase) <= phaseOrder.indexOf(targetPhase as Phase);
 }

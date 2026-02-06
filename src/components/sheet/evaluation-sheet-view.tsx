@@ -31,7 +31,7 @@ import type {
   ManagerEvaluationData,
   TotalEvaluationData,
 } from '@/lib/api-client';
-import type { Phase, Half, Role, PerformanceRating, CompetencyRating } from '@prisma/client';
+import type { Phase, Half, Role, PerformanceRating, CompetencyRating } from '@/types/enums';
 
 interface EvaluationSheetViewProps {
   sheet: SheetDetail;

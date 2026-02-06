@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { sheetsApi, type SheetSummary, ApiError } from '@/lib/api-client';
 import { phaseLabels } from '@/lib/workflow';
 import { halfLabels } from '@/types/evaluation';
-import type { Phase, Half } from '@prisma/client';
+import type { Phase, Half } from '@/types/enums';
 
 export function SheetsList() {
   const [sheets, setSheets] = useState<SheetSummary[]>([]);

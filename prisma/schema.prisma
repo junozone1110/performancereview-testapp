@@ -1,66 +1,23 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "debian-openssl-1.1.x"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  employee
-  manager
-  hr
-}
-
-enum Half {
-  first
-  second
-}
-
-enum Phase {
-  goal_setting
-  goal_review
-  self_evaluation
-  self_confirmed
-  manager_evaluation
-  manager_confirmed
-  hr_evaluation
-  finalized
-}
-
-enum PerformanceRating {
-  SS
-  S
-  A
-  B
-  C
-}
-
-enum CompetencyRating {
-  LEVEL_2_0
-  LEVEL_2_5
-  LEVEL_3_0_MINUS
-  LEVEL_3_0
-  LEVEL_3_5
-  LEVEL_4_0
-}
-
-enum Grade {
-  G1
-  G2
-  G3
-  G4
-  G5
-  G6
-  G7
-}
-
-enum Treatment {
-  raise
-  maintain
-  reduce
-}
+// Note: SQLite does not support native enums
+// Using String type with application-level validation
+// Valid values:
+// Role: "employee", "manager", "hr"
+// Half: "first", "second"
+// Phase: "goal_setting", "goal_review", "self_evaluation", "self_confirmed", "manager_evaluation", "manager_confirmed", "hr_evaluation", "finalized"
+// PerformanceRating: "SS", "S", "A", "B", "C"
+// CompetencyRating: "LEVEL_2_0", "LEVEL_2_5", "LEVEL_3_0_MINUS", "LEVEL_3_0", "LEVEL_3_5", "LEVEL_4_0"
+// Grade: "G1", "G2", "G3", "G4", "G5", "G6", "G7"
+// Treatment: "raise", "maintain", "reduce"
 
 model User {
   id             String   @id @default(uuid())
@@ -84,7 +41,7 @@ model User {
 model UserRole {
   id        String   @id @default(uuid())
   userId    String   @map("user_id")
-  role      Role
+  role      String   // Role: employee, manager, hr
   createdAt DateTime @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id])
@@ -112,10 +69,10 @@ model EvaluationPeriod {
   id           String   @id @default(uuid())
   name         String
   year         Int
-  half         Half
+  half         String   // Half: first, second
   startDate    DateTime @map("start_date")
   endDate      DateTime @map("end_date")
-  currentPhase Phase    @default(goal_setting) @map("current_phase")
+  currentPhase String   @default("goal_setting") @map("current_phase") // Phase
   isActive     Boolean  @default(true) @map("is_active")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
@@ -132,7 +89,7 @@ model PeriodAssignment {
   userId       String   @map("user_id")
   departmentId String   @map("department_id")
   managerId    String   @map("manager_id")
-  currentGrade Grade    @map("current_grade")
+  currentGrade String   @map("current_grade") // Grade: G1-G7
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
@@ -149,7 +106,7 @@ model EvaluationSheet {
   id        String   @id @default(uuid())
   userId    String   @map("user_id")
   periodId  String   @map("period_id")
-  status    Phase    @default(goal_setting)
+  status    String   @default("goal_setting") // Phase
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -182,16 +139,16 @@ model Goal {
 }
 
 model GoalSelfEvaluation {
-  id                    String             @id @default(uuid())
-  goalId                String             @unique @map("goal_id")
-  performanceReflection String?            @map("performance_reflection")
-  performanceRating     PerformanceRating? @map("performance_rating")
-  competencyReflection1 String?            @map("competency_reflection_1")
-  competencyReflection2 String?            @map("competency_reflection_2")
-  competencyReflection3 String?            @map("competency_reflection_3")
-  competencyRating      CompetencyRating?  @map("competency_rating")
-  createdAt             DateTime           @default(now()) @map("created_at")
-  updatedAt             DateTime           @updatedAt @map("updated_at")
+  id                    String   @id @default(uuid())
+  goalId                String   @unique @map("goal_id")
+  performanceReflection String?  @map("performance_reflection")
+  performanceRating     String?  @map("performance_rating") // PerformanceRating: SS, S, A, B, C
+  competencyReflection1 String?  @map("competency_reflection_1")
+  competencyReflection2 String?  @map("competency_reflection_2")
+  competencyReflection3 String?  @map("competency_reflection_3")
+  competencyRating      String?  @map("competency_rating") // CompetencyRating
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
 
   goal Goal @relation(fields: [goalId], references: [id])
 
@@ -199,14 +156,14 @@ model GoalSelfEvaluation {
 }
 
 model GoalManagerEvaluation {
-  id                 String             @id @default(uuid())
-  goalId             String             @unique @map("goal_id")
-  performanceComment String?            @map("performance_comment")
-  performanceRating  PerformanceRating? @map("performance_rating")
-  competencyComment  String?            @map("competency_comment")
-  competencyRating   CompetencyRating?  @map("competency_rating")
-  createdAt          DateTime           @default(now()) @map("created_at")
-  updatedAt          DateTime           @updatedAt @map("updated_at")
+  id                 String   @id @default(uuid())
+  goalId             String   @unique @map("goal_id")
+  performanceComment String?  @map("performance_comment")
+  performanceRating  String?  @map("performance_rating") // PerformanceRating: SS, S, A, B, C
+  competencyComment  String?  @map("competency_comment")
+  competencyRating   String?  @map("competency_rating") // CompetencyRating
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
 
   goal Goal @relation(fields: [goalId], references: [id])
 
@@ -214,22 +171,22 @@ model GoalManagerEvaluation {
 }
 
 model TotalEvaluation {
-  id                    String            @id @default(uuid())
-  sheetId               String            @unique @map("sheet_id")
-  averageScore          Decimal?          @map("average_score") @db.Decimal(3, 2)
-  performanceComment    String?           @map("performance_comment")
-  competencyLevel       CompetencyRating? @map("competency_level")
-  competencyLevelReason String?           @map("competency_level_reason")
-  mgrTreatment          Treatment?        @map("mgr_treatment")
-  mgrSalaryChange       Int?              @map("mgr_salary_change")
-  mgrTreatmentComment   String?           @map("mgr_treatment_comment")
-  mgrGrade              Grade?            @map("mgr_grade")
-  mgrGradeComment       String?           @map("mgr_grade_comment")
-  hrTreatment           Treatment?        @map("hr_treatment")
-  hrSalaryChange        Int?              @map("hr_salary_change")
-  hrGrade               Grade?            @map("hr_grade")
-  createdAt             DateTime          @default(now()) @map("created_at")
-  updatedAt             DateTime          @updatedAt @map("updated_at")
+  id                    String   @id @default(uuid())
+  sheetId               String   @unique @map("sheet_id")
+  averageScore          Decimal? @map("average_score")
+  performanceComment    String?  @map("performance_comment")
+  competencyLevel       String?  @map("competency_level") // CompetencyRating
+  competencyLevelReason String?  @map("competency_level_reason")
+  mgrTreatment          String?  @map("mgr_treatment") // Treatment: raise, maintain, reduce
+  mgrSalaryChange       Int?     @map("mgr_salary_change")
+  mgrTreatmentComment   String?  @map("mgr_treatment_comment")
+  mgrGrade              String?  @map("mgr_grade") // Grade: G1-G7
+  mgrGradeComment       String?  @map("mgr_grade_comment")
+  hrTreatment           String?  @map("hr_treatment") // Treatment: raise, maintain, reduce
+  hrSalaryChange        Int?     @map("hr_salary_change")
+  hrGrade               String?  @map("hr_grade") // Grade: G1-G7
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
 
   sheet EvaluationSheet @relation(fields: [sheetId], references: [id])
 

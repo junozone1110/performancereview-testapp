@@ -6,7 +6,7 @@ import { Button, Textfield } from '@giftee/abukuma-react';
 import { employeesApi, type EmployeeSheet, ApiError } from '@/lib/api-client';
 import { phaseLabels } from '@/lib/workflow';
 import { gradeLabels } from '@/types/evaluation';
-import type { Phase, Grade } from '@prisma/client';
+import type { Phase, Grade } from '@/types/enums';
 
 export function EmployeesList() {
   const [employees, setEmployees] = useState<EmployeeSheet[]>([]);

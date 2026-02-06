@@ -8,7 +8,7 @@ import {
   gradeLabels,
   treatmentLabels,
 } from '@/types/evaluation';
-import { CompetencyRating, Grade, Treatment } from '@prisma/client';
+import { CompetencyRating, Grade, Treatment } from '@/types/enums';
 
 interface TotalEvaluationSectionProps {
   totalEvaluation: TotalEvaluation | null;

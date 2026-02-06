@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { hasPermission } from '@/lib/permissions';
-import type { Role } from '@prisma/client';
+import type { Role } from '@/types/enums';
 
 // GET /api/sheets - シート一覧取得
 export async function GET(request: Request) {

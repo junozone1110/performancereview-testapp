@@ -1,5 +1,5 @@
-import {
-  PrismaClient,
+import { PrismaClient } from '@prisma/client';
+import type {
   Role,
   Grade,
   Half,
@@ -7,7 +7,63 @@ import {
   PerformanceRating,
   CompetencyRating,
   Treatment,
-} from '@prisma/client';
+} from '../src/types/enums';
+
+// Enum values as constants for seed data
+const Role = {
+  employee: 'employee' as Role,
+  manager: 'manager' as Role,
+  hr: 'hr' as Role,
+};
+
+const Grade = {
+  G1: 'G1' as Grade,
+  G2: 'G2' as Grade,
+  G3: 'G3' as Grade,
+  G4: 'G4' as Grade,
+  G5: 'G5' as Grade,
+  G6: 'G6' as Grade,
+  G7: 'G7' as Grade,
+};
+
+const Half = {
+  first: 'first' as Half,
+  second: 'second' as Half,
+};
+
+const Phase = {
+  goal_setting: 'goal_setting' as Phase,
+  goal_review: 'goal_review' as Phase,
+  self_evaluation: 'self_evaluation' as Phase,
+  self_confirmed: 'self_confirmed' as Phase,
+  manager_evaluation: 'manager_evaluation' as Phase,
+  manager_confirmed: 'manager_confirmed' as Phase,
+  hr_evaluation: 'hr_evaluation' as Phase,
+  finalized: 'finalized' as Phase,
+};
+
+const PerformanceRating = {
+  SS: 'SS' as PerformanceRating,
+  S: 'S' as PerformanceRating,
+  A: 'A' as PerformanceRating,
+  B: 'B' as PerformanceRating,
+  C: 'C' as PerformanceRating,
+};
+
+const CompetencyRating = {
+  LEVEL_2_0: 'LEVEL_2_0' as CompetencyRating,
+  LEVEL_2_5: 'LEVEL_2_5' as CompetencyRating,
+  LEVEL_3_0_MINUS: 'LEVEL_3_0_MINUS' as CompetencyRating,
+  LEVEL_3_0: 'LEVEL_3_0' as CompetencyRating,
+  LEVEL_3_5: 'LEVEL_3_5' as CompetencyRating,
+  LEVEL_4_0: 'LEVEL_4_0' as CompetencyRating,
+};
+
+const Treatment = {
+  raise: 'raise' as Treatment,
+  maintain: 'maintain' as Treatment,
+  reduce: 'reduce' as Treatment,
+};
 
 const prisma = new PrismaClient();
 

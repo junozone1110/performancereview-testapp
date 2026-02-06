@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { teamApi, type TeamMember, ApiError } from '@/lib/api-client';
 import { phaseLabels } from '@/lib/workflow';
 import { halfLabels, gradeLabels } from '@/types/evaluation';
-import type { Phase, Half, Grade } from '@prisma/client';
+import type { Phase, Half, Grade } from '@/types/enums';
 
 export function TeamList() {
   const [members, setMembers] = useState<TeamMember[]>([]);

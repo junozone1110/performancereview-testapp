@@ -3,7 +3,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { hasPermission } from '@/lib/permissions';
 import { canEditSheet } from '@/lib/workflow';
-import type { Role, Phase } from '@prisma/client';
+import type { Role, Phase } from '@/types/enums';
 
 interface RouteParams {
   params: Promise<{ sheetId: string }>;

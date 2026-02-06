@@ -1,5 +1,5 @@
 import { auth } from '@/lib/auth';
-import { Role } from '@prisma/client';
+import { Role } from '@/types/enums';
 import { NextResponse } from 'next/server';
 import { hasAnyRole, hasPermission, Permission } from './permissions';
 

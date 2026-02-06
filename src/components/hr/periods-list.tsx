@@ -5,7 +5,7 @@ import { Button, Textfield, Select } from '@giftee/abukuma-react';
 import { periodsApi, type Period, ApiError } from '@/lib/api-client';
 import { phaseLabels, phaseOrder } from '@/lib/workflow';
 import { halfLabels } from '@/types/evaluation';
-import type { Phase, Half } from '@prisma/client';
+import type { Phase, Half } from '@/types/enums';
 
 export function PeriodsList() {
   const [periods, setPeriods] = useState<Period[]>([]);

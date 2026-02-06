@@ -1,26 +1,5 @@
-version: '3.8'
-
 services:
-  # PostgreSQL データベース
-  db:
-    image: postgres:15-alpine
-    container_name: performance-review-db
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-performance_review}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-performance_review}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Next.js アプリケーション
+  # Next.js アプリケーション (SQLite使用)
   app:
     build:
       context: .
@@ -29,13 +8,13 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    volumes:
+      - sqlite_data:/app/data
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-performance_review}
+      DATABASE_URL: file:/app/data/performance_review.db
       NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-your-secret-key-change-in-production}
-    depends_on:
-      db:
-        condition: service_healthy
+      AUTH_TRUST_HOST: "true"
 
   # マイグレーション実行用（一時的なコンテナ）
   migrate:
@@ -44,18 +23,17 @@ services:
       dockerfile: Dockerfile
       target: deps
     container_name: performance-review-migrate
+    volumes:
+      - sqlite_data:/app/data
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-performance_review}
+      DATABASE_URL: file:/app/data/performance_review.db
     command: >
       sh -c "
         npx prisma migrate deploy &&
         npx prisma db seed
       "
-    depends_on:
-      db:
-        condition: service_healthy
     profiles:
       - migrate
 
 volumes:
-  postgres_data:
+  sqlite_data:

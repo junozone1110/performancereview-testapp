@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { hasRole } from '@/lib/permissions';
-import type { Role, Half, Phase } from '@prisma/client';
+import type { Role, Half, Phase } from '@/types/enums';
 
 // GET /api/periods - 評価期間一覧取得
 export async function GET() {
