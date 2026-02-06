@@ -3,6 +3,12 @@ import { NextResponse } from 'next/server';
 
 export default auth((req) => {
   const { nextUrl, auth: session } = req;
+
+  // GCLB ヘルスチェック（パスは / 固定のため、User-Agent で判定して 200 を返す）
+  if (nextUrl.pathname === '/' && /GoogleHC/i.test(req.headers.get('user-agent') ?? '')) {
+    return new NextResponse('OK', { status: 200 });
+  }
+
   const isLoggedIn = !!session?.user;
 
   const isAuthPage = nextUrl.pathname.startsWith('/login');
@@ -29,5 +35,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.png$).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/health|.*\\.png$).*)'],
 };

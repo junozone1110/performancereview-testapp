@@ -1,11 +1,11 @@
 # syntax=docker/dockerfile:1
 
-# ベースイメージ
-FROM node:20-alpine AS base
+# ベースイメージ（Debian系でOpenSSL互換性を確保）
+FROM node:20-slim AS base
 
 # 依存関係インストール用ステージ
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
+RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 # パッケージファイルをコピー
@@ -20,6 +20,7 @@ RUN npx prisma generate
 
 # ビルド用ステージ
 FROM base AS builder
+RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 # 依存関係をコピー
@@ -39,6 +40,9 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+
+# OpenSSLをインストール（Prisma用）
+RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # セキュリティ: 非rootユーザーで実行
 RUN addgroup --system --gid 1001 nodejs
@@ -61,9 +65,9 @@ RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data
 
 USER nextjs
 
-EXPOSE 3000
+EXPOSE 8080
 
-ENV PORT=3000
+ENV PORT=8080
 ENV HOSTNAME="0.0.0.0"
 
 CMD ["node", "server.js"]
